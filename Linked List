@@ -1,0 +1,168 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    struct Node *next;
+} Node;
+
+typedef struct LinkedList {
+    Node *head;
+} LinkedList;
+
+LinkedList *create_linked_list() {
+    LinkedList *list = (LinkedList *)malloc(sizeof(LinkedList));
+    list->head = NULL;
+    return list;
+}
+
+// Insert at head
+void insert(LinkedList *list, int data) {
+    Node *new_node = (Node *)malloc(sizeof(Node));
+    new_node->data = data;
+    new_node->next = list->head;
+    list->head = new_node;
+}
+
+// Insert at tail
+void insert_at_tail(LinkedList *list, int data) {
+    Node *new_node = (Node *)malloc(sizeof(Node));
+    new_node->data = data;
+    new_node->next = NULL;
+    
+    if (list->head == NULL) {
+        list->head = new_node;
+        return;
+    }
+    
+    Node *current = list->head;
+    while (current->next != NULL) {
+        current = current->next;
+    }
+    current->next = new_node;
+}
+
+// Insert at index
+void insert_at_index(LinkedList *list, int index, int data) {
+    if (index == 0) {
+        insert(list, data);
+        return;
+    }
+    
+    Node *new_node = (Node *)malloc(sizeof(Node));
+    new_node->data = data;
+    Node *current = list->head;
+    
+    for (int i = 0; i < index - 1; i++) {
+        if (current == NULL) {
+            printf("Index out of bounds\n");
+            free(new_node);
+            return;
+        }
+        current = current->next;
+    }
+    
+    new_node->next = current->next;
+    current->next = new_node;
+}
+
+// Delete by index
+void delete_node(LinkedList *list, int index) {
+    if (list->head == NULL) {
+        printf("List is empty\n");
+        return;
+    }
+    
+    if (index == 0) {
+        Node *temp = list->head;
+        list->head = list->head->next;
+        free(temp);
+        return;
+    }
+    
+    Node *current = list->head;
+    for (int i = 0; i < index - 1; i++) {
+        if (current->next == NULL) {
+            printf("Index out of bounds\n");
+            return;
+        }
+        current = current->next;
+    }
+    
+    Node *temp = current->next;
+    current->next = temp->next;
+    free(temp);
+}
+
+// Update data at index
+void update(LinkedList *list, int index, int data) {
+    Node *current = list->head;
+    
+    for (int i = 0; i < index; i++) {
+        if (current == NULL) {
+            printf("Index out of bounds\n");
+            return;
+        }
+        current = current->next;
+    }
+    
+    current->data = data;
+}
+
+// Get data at index
+int get(LinkedList *list, int index) {
+    Node *current = list->head;
+    
+    for (int i = 0; i < index; i++) {
+        if (current == NULL) {
+            printf("Index out of bounds\n");
+            return -1;
+        }
+        current = current->next;
+    }
+    
+    return current->data;
+}
+
+// Print the linked list for debugging purposes
+void print_list(LinkedList *list) {
+    Node *current = list->head;
+    
+    while (current != NULL) {
+        printf("%d -> ", current->data);
+        current = current->next;
+    }
+    
+    printf("NULL\n");
+}
+
+int main() {
+    // Create a linked list
+    LinkedList *list = create_linked_list();
+    
+    // Insert at head
+    insert(list, 10);
+    insert(list, 20);
+    print_list(list); // Expected output: 20 -> 10 -> NULL
+    
+    // Insert at tail
+    insert_at_tail(list, 30);
+    print_list(list); // Expected output: 20 -> 10 -> 30 -> NULL
+    
+    // Insert at index
+    insert_at_index(list, 1, 25);
+    print_list(list); // Expected output: 20 -> 25 -> 10 -> 30 -> NULL
+    
+    // Update data at index
+    update(list, 2, 15);
+    print_list(list); // Expected output: 20 -> 25 -> 15 -> 30 -> NULL
+    
+    // Get data at index
+    int data = get(list, 1);
+    printf("Data at index 1: %d\n", data); // Expected output: Data at index 1: 25
+    
+    // Delete node at index
+    delete_node(list, 1);
+    print_list(list); // Expected output: 20 -> 15 -> 30 -> NULL
+    
+    return 0;
